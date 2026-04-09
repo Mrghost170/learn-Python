@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyQuest â€” Learn Python Like a Game</title>
+  <meta name="description" content="PyQuest gamified Python learning platform with RPG boss battles, deep lessons, and user profiles." />
+  <meta name="theme-color" content="#0a0a0f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Canvas (particles) -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- Damage Flash -->
+<div id="damage-flash" class="damage-flash"></div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-logo">
+    <span class="py">Py</span><span class="quest">Quest</span>
+  </div>
+  <div class="loading-pixels">
+    <div class="pixel-row">
+      <div class="px"></div><div class="px"></div><div class="px"></div><div class="px"></div><div class="px"></div>
+      <div class="px"></div><div class="px"></div><div class="px"></div><div class="px"></div><div class="px"></div>
+    </div>
+  </div>
+  <div class="loading-text">Loading Dungeon...</div>
+</div>
+
+<!-- GAME HUD -->
+<div id="game-hud" style="display:none">
+  <div id="hud-left">
+    <div id="hud-logo" class="hud-logo"><span class="py">Py</span><span class="quest">Quest</span></div>
+    <div class="hud-user-badge" id="hud-user-badge">ðŸ‘¤ Guest</div>
+  </div>
+  <div class="hud-center">
+    <div class="hud-stat">
+      <span class="hud-stat-icon">â­</span>
+      <div>
+        <div class="hud-stat-label">XP</div>
+        <div class="hud-stat-value" id="hud-xp">0</div>
+      </div>
+    </div>
+    <div class="xp-bar-container">
+      <div class="xp-bar-bg">
+        <div class="xp-bar-fill" id="hud-xp-bar" style="width:0%"></div>
+        <div class="xp-bar-segments"></div>
+      </div>
+    </div>
+    <div class="hud-stat">
+      <span class="hud-stat-icon">ðŸŒ</span>
+      <div>
+        <div class="hud-stat-label">Worlds</div>
+        <div class="hud-stat-value" id="hud-worlds">0/7</div>
+      </div>
+    </div>
+    <div class="hud-rank-badge" id="hud-rank">ðŸ¥š Novice</div>
+  </div>
+  <div class="hud-right">
+    <button class="hud-btn" id="hud-btn-map">ðŸ—º Map</button>
+    <button class="hud-btn" id="hud-btn-profile">ðŸ‘¤ Profile</button>
+    <button class="hud-btn hud-btn-logout" id="hud-btn-logout">â¬… Logout</button>
+  </div>
+</div>
+
+<!-- SCREEN: LOGIN -->
+<div id="screen-login" class="screen hidden">
+  <div class="login-container">
+    <div class="login-block-art">
+      <div class="block-pixel b1"></div>
+      <div class="block-pixel b2"></div>
+      <div class="block-pixel b3"></div>
+      <div class="block-pixel b4"></div>
+    </div>
+    <div class="login-logo">
+      <span class="py">Py</span><span class="quest">Quest</span>
+    </div>
+    <p class="login-tagline">ðŸ Your Python Adventure Awaits</p>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-login">Login</button>
+      <button class="login-tab" id="tab-signup">New Hero</button>
+    </div>
+
+    <div id="login-form-panel">
+      <div class="login-form">
+        <label class="block-label">Hero Name</label>
+        <input class="block-input" type="text" id="login-username" placeholder="Enter your username..." maxlength="20" />
+        <div id="saved-heroes" class="saved-heroes"></div>
+        <button class="block-btn block-btn-primary" id="btn-login">âš”ï¸ Enter the Dungeon</button>
+      </div>
+    </div>
+
+    <div id="signup-form-panel" style="display:none">
+      <div class="login-form">
+        <label class="block-label">Choose Hero Name</label>
+        <input class="block-input" type="text" id="signup-username" placeholder="e.g. PythonMaster99" maxlength="20" />
+        <label class="block-label" style="margin-top:16px">Pick Your Class</label>
+        <div class="class-picker" id="class-picker">
+          <div class="class-card active" data-class="Warrior">
+            <span>âš”ï¸</span><div>Warrior</div><small>Power through</small>
+          </div>
+          <div class="class-card" data-class="Mage">
+            <span>ðŸ”®</span><div>Mage</div><small>Think deeply</small>
+          </div>
+          <div class="class-card" data-class="Rogue">
+            <span>ðŸ—¡ï¸</span><div>Rogue</div><small>Move fast</small>
+          </div>
+        </div>
+        <button class="block-btn block-btn-primary" id="btn-signup" style="margin-top:20px">ðŸŒ± Begin Quest</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: LANDING -->
+<div id="screen-landing" class="screen hidden">
+  <div class="landing-badge">ðŸ Python Learning Adventure Awaits</div>
+  <div class="landing-logo">
+    <span class="py">Py</span><span class="quest">Quest</span>
+  </div>
+  <p class="landing-tagline">Master Python from Beginner to Advanced</p>
+  <p class="landing-subtitle">
+    Adventure through 7 epic dungeon worlds, learn Python through deep interactive lessons,
+    and defeat powerful bosses with real coding challenges.
+  </p>
+  <div class="landing-cta-group">
+    <button class="btn-primary" id="btn-start">âš”ï¸ Start Your Quest</button>
+    <button class="btn-secondary" id="btn-continue">Continue Journey â†’</button>
+  </div>
+  <div class="landing-stats-row">
+    <div class="stat-item"><span class="stat-value">7</span><span class="stat-label">Worlds</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-value">28</span><span class="stat-label">Deep Lessons</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-value">7</span><span class="stat-label">Boss Battles</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-value">3,500+</span><span class="stat-label">Max XP</span></div>
+  </div>
+  <div class="world-preview-strip">
+    <div class="world-preview-chip">ðŸŒ Variables &amp; Types</div>
+    <div class="world-preview-chip">ðŸŒ‹ Control Flow</div>
+    <div class="world-preview-chip">ðŸŒ€ Loops</div>
+    <div class="world-preview-chip">ðŸ° Functions</div>
+    <div class="world-preview-chip">ðŸ“¦ Data Structures</div>
+    <div class="world-preview-chip">ðŸŒ OOP</div>
+    <div class="world-preview-chip">ðŸ”¥ Advanced Python</div>
+  </div>
+</div>
+
+<!-- SCREEN: WORLD MAP -->
+<div id="screen-worldmap" class="screen hidden">
+  <div class="worldmap-header">
+    <h1 class="font-pixel glow-cyan">âš”ï¸ World Map</h1>
+    <p>Choose your dungeon. Complete all lessons, then face the Boss!</p>
+  </div>
+  <div class="resume-banner" id="resume-banner" style="display:none">
+    <span class="resume-icon">â–¶</span>
+    <div class="resume-text">
+      <div class="resume-title">Continue from where you left off</div>
+      <div class="resume-sub" id="resume-desc">World 1, Lesson 1</div>
+    </div>
+    <button class="block-btn block-btn-small" id="btn-resume">Resume âš¡</button>
+  </div>
+  <div class="worlds-grid" id="worlds-grid"></div>
+</div>
+
+<!-- SCREEN: WORLD -->
+<div id="screen-world" class="screen hidden"></div>
+
+<!-- SCREEN: LESSON -->
+<div id="screen-lesson" class="screen hidden"></div>
+
+<!-- SCREEN: BOSS -->
+<div id="screen-boss" class="screen hidden"></div>
+
+<!-- SCREEN: VICTORY -->
+<div id="screen-victory" class="screen hidden"></div>
+
+<!-- SCREEN: DEFEAT -->
+<div id="screen-defeat" class="screen hidden"></div>
+
+<!-- SCREEN: PROFILE -->
+<div id="screen-profile" class="screen hidden"></div>
+
+<!-- SOLUTION MODAL -->
+<div id="solution-modal" class="solution-modal hidden">
+  <div class="solution-panel">
+    <div class="solution-header">
+      <div class="solution-title">ðŸ“– Step-by-Step Solution</div>
+      <button class="solution-close" id="solution-close">âœ•</button>
+    </div>
+    <div class="solution-problem-desc" id="solution-problem-desc"></div>
+    <div class="solution-steps" id="solution-steps"></div>
+    <div class="solution-final-code" id="solution-final-code"></div>
+    <button class="block-btn block-btn-primary" id="solution-done">Got it! âœ“</button>
+  </div>
+</div>
+
+<script src="content.js"></script>
+<script src="battles.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+
